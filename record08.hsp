@@ -1,0 +1,131 @@
+; sound recording
+; copyleft 2017-06-24 sugiura@nagoya-u.jp
+;          2019-09-11 タイムスタンプつけて音声ファイルの保存
+;					  再生ファイルをダイアログウィンドウで選択
+;		   2019-09-17 picture description task with cound down 
+
+pos 550, 30
+mes "Count Down"
+mes "----------"
+
+pos 200, 100
+mes "Look at the picture below."
+mes "You have 20 seconds to prepare your speech."
+mes "-----"
+await 2000
+mes "Ready"
+await 1000
+mes "Set"
+await 1000
+mes "Go!"
+await 1000
+
+pos 200, 230
+picload "sample.jpg", 1
+
+
+pos 580, 60
+i =20
+repeat 20
+mes i
+await 1000
+
+i = i - 1
+loop
+
+cls
+
+pos 550, 30
+mes "Count Down"
+mes "----------"
+
+pos 200, 100
+mes "Push the Record button to start your speech."
+mes "You have 20 seconds for your speech."
+mes "-----"
+await 2000
+mes "Ready"
+await 1000
+mes "Set"
+await 1000
+mes "Go!"
+await 1000
+pos 300, 350
+
+button gosub "Record", *record
+mes ""
+
+pos 580, 60
+i =20
+repeat 20
+mes i
+await 1000
+
+i = i - 1
+loop
+
+mes ""
+mes "Stop!"
+
+await 2000
+
+	
+cls
+pos 200, 100
+mes "Push the Save button to save your speech."
+mes ""
+
+button gosub "Save", *teisi
+mes ""
+button gosub "Play", *play
+
+mes ""
+mes ""
+button goto "End", *owari
+
+stop
+
+*owari
+	mci "close sou"
+	cls
+
+	pos 300, 200
+	mes "Bye"
+	wait 100
+	end
+	
+; sub --------------------------
+	
+*record
+	mci "open new alias sam type waveaudio"
+	mci "set sam channels 2"
+	mci "set sam samplepersec 44100"
+	mci "set sam bitspersample 16"
+	mci "record sam"
+	return
+	
+*play
+	dialog "wav", 16, "WAVファイルを選択"
+	dialog "このファイルを再生します："+refstr,0,"確認"
+	mci "open \""+refstr+"\" alias sou type waveaudio"
+	mci "play sou"
+	return
+
+*teisi
+
+	nen = gettime(0)
+	gatu = gettime(1)
+	niti = gettime(3)
+	ji = gettime(4)
+	fun = gettime(5)
+
+	taimu = "sound"+nen+"-"+gatu+"-"+niti+"-"+ji+"-"+fun+".wav"
+
+	mci "stop sam"
+	mci "save sam \""+taimu+"\"
+
+	mci "close sam"
+	return
+
+
+;
